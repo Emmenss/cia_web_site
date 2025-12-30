@@ -12,13 +12,11 @@ COPY . .
 
 RUN npm install
 RUN npm run build
-RUN composer install --no-dev --optimize-autoloader
+
 
 RUN php artisan key:generate --force || true
 RUN php artisan optimize:clear
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+
 
 RUN chmod -R 775 storage bootstrap/cache
 

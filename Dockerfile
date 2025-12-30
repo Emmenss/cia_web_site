@@ -9,9 +9,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader
+
 RUN npm install
 RUN npm run build
+RUN composer install --no-dev --optimize-autoloader
 
 RUN php artisan key:generate --force || true
 RUN php artisan optimize:clear

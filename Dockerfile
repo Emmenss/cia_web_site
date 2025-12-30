@@ -15,7 +15,7 @@ RUN npm run build
 
 
 RUN php artisan key:generate --force || true
-RUN php artisan optimize:clear
+
 
 
 RUN chmod -R 775 storage bootstrap/cache

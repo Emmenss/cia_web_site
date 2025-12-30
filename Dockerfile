@@ -1,28 +1,29 @@
-# Étape 1 : PHP + extensions
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
-# Installer extensions nécessaires
+# Dépendances système
 RUN apt-get update && apt-get install -y \
     libzip-dev zip unzip git curl npm \
-    && docker-php-ext-install pdo_mysql zip
+    libpq-dev \
+    && docker-php-ext-install pdo_pgsql zip
 
-# Installer Composer
+# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copier projet
+# App
 WORKDIR /var/www
 COPY . .
 
-# Installer dépendances Laravel et Node
+# Dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
+
+# Front (Inertia / Vue)
 RUN npm install
 RUN npm run build
 
-# Permissions
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Permissions Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-# Exposer port
 EXPOSE 8000
 
-# Commande de démarrage
 CMD php artisan serve --host=0.0.0.0 --port=8000
